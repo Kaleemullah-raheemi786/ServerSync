@@ -26,6 +26,7 @@ import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.just
 import io.mockk.mockk
+import kotlin.reflect.KClass
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
@@ -102,22 +103,37 @@ class AppRepositoryTest {
     }
 
     /**
-     * Test to verify that a server-side error response results in a failure result.
-     * Mocks an API error response and asserts the error type.
+     * Test: when API returns 400 BadRequest,
+     * [AppRepository.fetchApps] should return a failure with [ApiError.BadRequest].
      */
     @Test
-    fun `fetchApps - server error returns failure`() = runTest {
-        setupMockClientForError(HttpStatusCode.InternalServerError)
+    fun `fetchApps - client error 400 returns BadRequest`() =
+        runErrorTest(HttpStatusCode.BadRequest, ApiError.BadRequest::class)
 
-        appRepository = AppRepository(mockHttpClient, mockAppDao)
+    /**
+     * Test: when API returns 403 Forbidden,
+     * [AppRepository.fetchApps] should return a failure with [ApiError.Unauthorized].
+     */
+    @Test
+    fun `fetchApps - client error 403 returns Unauthorized`() =
+        runErrorTest(HttpStatusCode.Forbidden, ApiError.Unauthorized::class)
 
-        val result = appRepository.fetchApps()
+    /**
+     * Test: when API returns 409 Conflict,
+     * [AppRepository.fetchApps] should return a failure with [ApiError.Conflict].
+     */
+    @Test
+    fun `fetchApps - client error 409 returns Conflict`() =
+        runErrorTest(HttpStatusCode.Conflict, ApiError.Conflict::class)
 
-        assertTrue(result.isFailure)
-        val error = result.exceptionOrNull()
-        assertNotNull(error)
-        assertTrue(error is ApiError.UnknownError)
-    }
+    /**
+     * Test: when API returns 500 Internal Server Error,
+     * [AppRepository.fetchApps] should return a failure with [ApiError.ServerError].
+     */
+    @Test
+    fun `fetchApps - server error 500 returns ServerError`() =
+        runErrorTest(HttpStatusCode.InternalServerError, ApiError.ServerError::class)
+
 
     /**
      * Test to verify that when an exception occurs (e.g., network error),
@@ -174,6 +190,27 @@ class AppRepositoryTest {
                 }
             }
         }
+    }
+
+    /**
+     * A reusable helper function to run tests for different HTTP error responses.
+     *
+     * @param statusCode The simulated HTTP status code.
+     * @param expectedErrorClass The expected [ApiError] subclass type.
+     */
+    private fun runErrorTest(statusCode: HttpStatusCode, expectedErrorClass: KClass<out ApiError>) = runTest {
+        setupMockClientForError(statusCode)
+        appRepository = AppRepository(mockHttpClient, mockAppDao)
+
+        val result = appRepository.fetchApps()
+        assertTrue(result.isFailure)
+
+        val error = result.exceptionOrNull()
+        assertNotNull(error)
+        assertTrue(
+            "Expected error of type ${expectedErrorClass.simpleName} but got ${error!!::class.simpleName}",
+            expectedErrorClass.isInstance(error)
+        )
     }
 
     /**

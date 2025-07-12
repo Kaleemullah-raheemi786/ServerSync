@@ -64,6 +64,29 @@ class AppRepository(
                         Result.failure(ApiError.UnknownError("No app items found"))
                     }
                 }
+                HttpStatusCode.BadRequest -> {
+                    val errorMsg = response.bodyAsText().ifEmpty { "Invalid request data." }
+                    Log.e(TAG, "BadRequest: $errorMsg")
+                    Result.failure(ApiError.BadRequest(errorMsg))
+                }
+
+                HttpStatusCode.Forbidden -> {
+                    val errorMsg = response.bodyAsText().ifEmpty { "Access denied: insufficient permissions." }
+                    Log.e(TAG, "Forbidden: $errorMsg")
+                    Result.failure(ApiError.Unauthorized(errorMsg))
+                }
+
+                HttpStatusCode.Conflict -> {
+                    val errorMsg = response.bodyAsText().ifEmpty { "Conflict: operation could not be completed." }
+                    Log.e(TAG, "Conflict: $errorMsg")
+                    Result.failure(ApiError.Conflict(errorMsg))
+                }
+
+                HttpStatusCode.InternalServerError -> {
+                    val errorMsg = response.bodyAsText().ifEmpty { "Server error. Please try again later." }
+                    Log.e(TAG, "InternalServerError: $errorMsg")
+                    Result.failure(ApiError.ServerError(errorMsg))
+                }
 
                 // Handle other HTTP errors by reading error body text
                 else -> {

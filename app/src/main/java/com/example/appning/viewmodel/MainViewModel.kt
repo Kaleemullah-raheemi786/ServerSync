@@ -77,7 +77,7 @@ class MainViewModel(
                     // Log the error message for debugging
                     Log.e(TAG, errorMsg)
 
-                    // Show error to the user (optional external function call)
+                    // Show error to the user
                     showError(errorMsg)
                 }
             )
