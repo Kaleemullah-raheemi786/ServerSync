@@ -56,7 +56,7 @@ class MyApplication : Application() {
             this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val intervalMillis = 30 * 60 * 1000L // 15 minutes
+        val intervalMillis = 30 * 60 * 1000L // 30 minutes
         val firstTriggerTime = System.currentTimeMillis() + intervalMillis
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
