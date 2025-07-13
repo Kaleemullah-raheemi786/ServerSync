@@ -1,5 +1,6 @@
 package com.example.appning.ui.theme.screens
 
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,9 +18,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.appning.network.model.AppItem
 import com.example.appning.ui.theme.others.AppItemCard
+import com.example.appning.ui.theme.others.RequestNotificationPermission
 import com.example.appning.viewmodel.MainViewModel
 
 @Composable
@@ -29,6 +32,14 @@ fun AppsListScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    val context = LocalContext.current
+
+    // Only needed on Android 13+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        RequestNotificationPermission()
+    }
+
 
     LaunchedEffect(Unit) {
         viewModel.getAllApplications()

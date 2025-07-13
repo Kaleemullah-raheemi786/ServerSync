@@ -1,19 +1,20 @@
 package com.example.appning
 
-import android.app.AlarmManager
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Intent
+import android.content.Context
 import android.os.Build
-import android.provider.Settings
+import android.util.Log
+import androidx.work.PeriodicWorkRequestBuilder
 import com.example.appning.di.appModule
-import com.example.appning.manager.NotificationReceiver
+import com.example.appning.manager.NotificationWorker
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import androidx.work.*
+import java.util.concurrent.TimeUnit
 
 class MyApplication : Application() {
 
@@ -29,58 +30,56 @@ class MyApplication : Application() {
         }
 
         // Create notification channel for notifications
-        createNotificationChannel()
+        createNotificationChannel(this)
 
         // Schedule the alarm
-        setNotificationAlarm()
+        scheduleNotificationWorker(this)
     }
 
-    private fun createNotificationChannel() {
+    fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 "apps_channel",
-                "New Apps Notification",
+                "Apps Notifications",
                 NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
-                description = "Notifies when new apps are available."
+                description = "Channel for new apps notifications"
             }
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager: NotificationManager =
+                context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
 
-    private fun setNotificationAlarm() {
-        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, NotificationReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    fun scheduleNotificationWorker(context: Context) {
+        // Log the start of scheduling process
+        Log.d(TAG, "Scheduling NotificationWorker with 30 minutes interval")
+
+        // Create a periodic work request to trigger the NotificationWorker every 30 minutes
+        val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(
+            30, TimeUnit.MINUTES  // Set interval to 30 minutes (minimum for PeriodicWorkRequest is 15)
+        )
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiresBatteryNotLow(false) // Allow work even if battery is low
+                    .setRequiredNetworkType(NetworkType.NOT_REQUIRED) // No network requirement
+                    .build()
+            )
+            .build()
+
+        // Enqueue the work uniquely, replacing any existing one with the same name
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "NewAppsNotificationWork",                 // Unique name for this periodic work
+            ExistingPeriodicWorkPolicy.REPLACE,        // Replace if work with same name exists
+            workRequest                                // The periodic work request
         )
 
-        val intervalMillis = 30 * 60 * 1000L // 30 minutes
-        val firstTriggerTime = System.currentTimeMillis() + intervalMillis
+        // Log successful scheduling
+        Log.d(TAG, "NotificationWorker scheduled successfully")
+    }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (alarmManager.canScheduleExactAlarms()) {
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    firstTriggerTime,
-                    pendingIntent
-                )
-            } else {
-                // Optionally request permission from user
-                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                }
-                startActivity(intent)
-            }
-        } else {
-            // For Android 11 and below
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                firstTriggerTime,
-                pendingIntent
-            )
-        }
+    companion object{
+        const val TAG = "MyApplication"
     }
 }
 
