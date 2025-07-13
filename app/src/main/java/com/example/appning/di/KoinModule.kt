@@ -31,7 +31,7 @@ val appModule = module {
     // Provide a singleton instance of Room Database
     single {
         Room.databaseBuilder(get(), AppDatabase::class.java, "app_database")
-            .fallbackToDestructiveMigration() // Clears and recreates DB if schema changes
+            .fallbackToDestructiveMigration(false) // Clears and recreates DB if schema changes
             .build()
     }
 
