@@ -13,7 +13,7 @@ Cache fetched apps into Room Database
 
 Support offline access using cached data
 
-Periodic background notifications for new apps using AlarmManager + BroadcastReceiver for exact scheduling
+Periodic background notifications for new apps using WorkManager
 
 Dependency Injection using Koin
 
