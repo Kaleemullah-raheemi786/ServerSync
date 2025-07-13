@@ -1,4 +1,4 @@
-package com.example.appning.repository
+package com.example.appning.network.repository
 
 import android.util.Log
 import com.example.appning.database.dao.AppDao

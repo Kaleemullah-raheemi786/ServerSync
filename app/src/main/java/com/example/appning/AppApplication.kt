@@ -31,11 +31,13 @@ class MyApplication : Application() {
 
         // Create notification channel for notifications
         createNotificationChannel(this)
-
-        // Schedule the alarm
         scheduleNotificationWorker(this)
     }
 
+    /**
+     * Creates a notification channel for devices running Android 8.0 (API 26) and above.
+     * This is required to show notifications on modern Android versions.
+     */
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -51,6 +53,10 @@ class MyApplication : Application() {
         }
     }
 
+    /**
+     * Schedule the periodic notification worker to trigger notifications every 30 minutes,
+     * ensuring it works reliably in the background or when the app is killed on modern Android versions.
+     */
     fun scheduleNotificationWorker(context: Context) {
         // Log the start of scheduling process
         Log.d(TAG, "Scheduling NotificationWorker with 30 minutes interval")

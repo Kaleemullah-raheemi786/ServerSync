@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.appning.network.utils.ApiError
-import com.example.appning.repository.AppRepository
+import com.example.appning.network.repository.AppRepository
 import com.example.appning.state.MainUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

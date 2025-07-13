@@ -4,7 +4,7 @@ import com.example.appning.database.dao.AppDao
 import com.example.appning.database.model.AppEntity
 import com.example.appning.dummy.dummyCachedApps
 import com.example.appning.network.utils.ApiError
-import com.example.appning.repository.AppRepository
+import com.example.appning.network.repository.AppRepository
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import org.junit.Assert.*

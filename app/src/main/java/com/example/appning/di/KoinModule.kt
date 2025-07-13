@@ -2,7 +2,7 @@ package com.example.appning.di
 
 import androidx.room.Room
 import com.example.appning.database.db.AppDatabase
-import com.example.appning.repository.AppRepository
+import com.example.appning.network.repository.AppRepository
 import com.example.appning.viewmodel.MainViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
