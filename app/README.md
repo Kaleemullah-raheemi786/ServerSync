@@ -1,6 +1,9 @@
 📱Project Overview
 
-This is a Kotlin-based Android application built with Jetpack Compose, following a clean MVVM architecture pattern. The project uses Koin for dependency injection and Ktor as the HTTP client. The app fetches a list of applications from a remote API, displays them in both a list and detail screen, caches them locally, and notifies users when new apps become available.
+This is a Kotlin-based Android application built with Jetpack Compose, following a clean MVVM architecture pattern. 
+The project uses Koin for dependency injection and Ktor as the HTTP client. The app fetches a list of applications 
+from a remote API, displays them in both a list and detail screen, caches them locally, and notifies users when new 
+apps become available.
 
 ✅ Features Developed Fetch applications list via remote API using Ktor HttpClient
 
