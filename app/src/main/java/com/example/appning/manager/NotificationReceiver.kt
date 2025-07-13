@@ -72,7 +72,7 @@ class NotificationReceiver : BroadcastReceiver() {
             Log.w("NotificationReceiver", "Notifications disabled or POST_NOTIFICATIONS permission not granted.")
         }
 
-        // Schedule the next alarm to trigger after 15 minutes
+        // Schedule the next alarm to trigger after 30 minutes
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val repeatIntent = Intent(context, NotificationReceiver::class.java)
         val repeatPendingIntent = PendingIntent.getBroadcast(
