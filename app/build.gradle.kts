@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.demo"
+    namespace = "com.example.server_sync"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.aptoideapp"
+        applicationId = "com.example.server_fetch"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
