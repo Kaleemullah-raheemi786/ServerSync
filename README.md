@@ -5,6 +5,7 @@ The project uses Koin for dependency injection and Ktor as the HTTP client. The 
 displays them in both a list and detail screen, caches them locally, and notifies users when new apps become available.
 
 ✅ Features Developed
+
 Fetch applications list via remote API using Ktor HttpClient
 
 API Request Error Handling

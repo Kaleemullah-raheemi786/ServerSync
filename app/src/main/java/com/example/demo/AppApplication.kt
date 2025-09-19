@@ -65,6 +65,7 @@ class MyApplication : Application() {
         val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(
             30, TimeUnit.MINUTES  // Set interval to 30 minutes (minimum for PeriodicWorkRequest is 15)
         )
+            .setInitialDelay(30, TimeUnit.MINUTES) // Delay the first execution by 30 minutes
             .setConstraints(
                 Constraints.Builder()
                     .setRequiresBatteryNotLow(false) // Allow work even if battery is low
